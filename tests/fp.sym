@@ -1,5 +1,7 @@
-% log validation : highlevel.
-%log timers : highlevel.
+% Some standard tests for propositional linear logic
+
+%log validation : highlevel.
+% log timers : highlevel.
 
 % log setup : highlevel.
 
