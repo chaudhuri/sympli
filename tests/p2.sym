@@ -1,0 +1,5 @@
+%log check : highlevel.
+%log infer : highlevel.
+
+%reject \x1. let x2 * x3 = x1 in x2 end : (A * B) -o A.
+

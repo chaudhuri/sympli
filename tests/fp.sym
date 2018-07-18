@@ -1,0 +1,258 @@
+% log validation : highlevel.
+%log timers : highlevel.
+
+% log setup : highlevel.
+
+% log paranoia : highlevel.
+
+% linear function (-o)
+% intro/elim (degenerate to hyp/subst)
+%prove A -o A.
+%prove (A -o B) -o (A -o B).
+%refute 100 : A -o (B -o A).
+%reject \x. \y. x : A -o (B -o A).
+%refute 100 : A -o (A -o A).
+%reject \x. \y. x : A -o (A -o A).
+%reject \x. \y. y : A -o (A -o A).
+
+% -o / -o
+%prove (A -o (B -o C)) -o (B -o (A -o C)).
+
+% multiplicative conjunction ( * )
+% intro/elim
+%prove  A -o (B -o (A * B)).
+%prove  (A * B) -o ((A -o (B -o C)) -o C).
+%refute 100 : (A * B) -o A.
+%reject \x1. let x2 * x3 = x1 in x2 end : (A * B) -o A.
+%refute 100 : (A * B) -o B.
+%reject \x1. let x2 * x3 = x1 in x3 end : (A * B) -o B.
+%prove  (A * B) -o (B * A).
+%refute 100 : (A * A) -o A.
+%refute 100 : A -o (A * A).
+%reject \x. x * x : A -o A * A.
+
+% * / *
+%prove  ((A * B) * C) -o (A * (B * C)).
+%prove  ((A * B) * C) o- (A * (B * C)).
+
+% -o / *
+%prove  ((A * B) -o C) -o (A -o (B -o C)).
+%prove  ((A * B) -o C) o- (A -o (B -o C)).
+%refute 100 : (A -o (B * C)) -o ((A -o B) * (A -o C)).
+
+%reject \x1. ((\x2. let x3 * x4 = x1 x2 in x3 end)
+              * (\x2. let x3 * x4 = x1 x2 in x4 end))
+        : (A -o (B * C)) -o ((A -o B) * (A -o C)).
+% (fixed -- kaustuv) Tue May 25 09:47:09 EDT 2004
+
+%refute 100 : (A -o (B * C)) o- ((A -o B) * (A -o C)).
+%reject \x1. let x2 * x3 = x1 in \x4. x2 x4 * x3 x4 end
+        : (A -o (B * C)) o- ((A -o B) * (A -o C)).
+
+% multiplicative unit (1)
+% intro/elim
+%prove  1.
+%prove  1 -o (C -o C).
+
+% -o / 1
+%prove  (1 -o A) -o A.
+%prove  (1 -o A) o- A.
+%refute 100 : (A -o 1) -o 1.
+%reject \x. 1 : (A -o 1) -o 1.
+%refute 100 : (A -o 1) o- 1.
+%reject \x1. let 1 = x in \x2. 1 end : (A -o 1) o- 1.
+
+% * / 1
+%prove  (A * 1) -o A.
+%prove  (A * 1) o- A.
+%prove  (1 * A) -o A.
+%prove  (1 * A) o- A.
+
+% additive conjunction (&)
+% intro / elim
+%prove  (A & B) -o (A & B).
+%prove  (A & B) -o A.
+%prove  (A & B) -o B.
+%refute 100 : A -o (B -o (A & B)).
+%reject \x. \y. (x, y) : A -o (B -o (A & B)).
+%prove  (A & B) -o (B & A).
+%prove  (A & A) -o A.
+%prove  (A & A) o- A.
+
+% & / &
+%prove  ((A & B) & C) -o (A & (B & C)).
+%prove  ((A & B) & C) o- (A & (B & C)).
+
+% & / 1
+%prove  (A & 1) -o A.
+%refute 100 : A -o (A & 1).
+%reject \x. (x, 1) : A -o (A & 1).
+
+% -o / &
+%prove  (A -o (B & C)) -o ((A -o B) & (A -o C)).
+%prove  (A -o (B & C)) o- ((A -o B) & (A -o C)).
+%refute 100 : ((A & B) -o C) -o (A -o (B -o C)).
+%reject \x1. \x2. \x3. x1 (x2, x3) : ((A & B) -o C) -o (A -o (B -o C)).
+%refute 100 : ((A & B) -o C) o- (A -o (B -o C)).
+%reject \x1. \x2. x1 (fst x2) (snd x2) : (A -o (B -o C)) -o ((A & B) -o C).
+
+% * / &
+%prove  (A * (B & C)) -o ((A * B) & (A * C)).
+%refute 100 : (A * (B & C)) o- ((A * B) & (A * C)).
+%reject \x1. let x2 * x3 = fst x1 in let x4 * x5 = snd x1 in x2 * (x3, x5) end end
+ : (A * (B & C)) o- ((A * B) & (A * C)).
+
+% additive truth (#)
+% intro / elim
+%prove  # -o #.
+% no elim
+
+% -o / #
+%prove  (A -o #) -o #.
+%prove  (A -o #) o- #.
+%prove  (# -o A) -o A.
+%refute 100 : (# -o A) o- A.
+%reject \x1. \x2. x1 : (# -o A) o- A.
+
+% & / #
+%prove  (A & #) -o A.
+%prove  (A & #) o- A.
+%prove  (# & A) -o A.
+%prove  (# & A) o- A.
+
+% * / #
+%refute 100 : (A * #) -o A.
+%reject \x1. let x2 * x3 = x1 in x2 end : (A * #) -o A.
+%prove  (A * #) o- A.
+
+% additive disjunction (+)
+% intro / elim
+%prove  A -o (A + B).
+%prove  B -o (A + B).
+%prove  (A + B) -o ((A -o C) & (B -o C) -o C).
+%refute 100 : (A + B) -o A.
+%reject \x1. case x1 of inl x2 => x2 | inr x3 => x3 : (A + B) -o A.
+%refute 100 : (A + B) -o B.
+%reject \x1. case x1 of inl x2 => x2 | inr x3 => x3 : (A + B) -o B.
+
+%prove  (A + B) -o (B + A).
+%prove  (A + A) -o A.
+%prove  (A + A) o- A.
+
+% + / +
+%prove  (A + (B + C)) -o ((A + B) + C).
+%prove  (A + (B + C)) o- ((A + B) + C).
+
+% -o / +
+%prove  ((A + B) -o C) -o ((A -o C) & (B -o C)).
+%prove  ((A + B) -o C) o- ((A -o C) & (B -o C)).
+%refute 100 : (A -o (B + C)) -o ((A -o B) + (A -o C)).
+
+%reject \x1. inl (\x2. case x1 x2 of inl x3 => x3 | inr x4 => x4)
+        : (A -o (B + C)) -o ((A -o B) + (A -o C)).
+% (appears to work -- kaustuv) Tue May 25 11:15:07 EDT 2004
+
+%prove  (A -o (B + C)) o- ((A -o B) + (A -o C)).
+
+% * / +
+%prove  (A * (B + C)) -o ((A * B) + (A * C)).
+%prove  (A * (B + C)) o- ((A * B) + (A * C)).
+
+% & / +
+%refute 100 : (A & (B + C)) -o ((A & B) + (A & C)).
+%reject \x1. case snd x1 of inl x2 => inl (fst x1, x2)
+                          | inr x3 => inr (fst x1, x3)
+     :  (A & (B + C)) -o ((A & B) + (A & C)).
+%prove  (A & (B + C)) o- ((A & B) + (A & C)).
+
+% + / 1
+%refute 100 : (A + 1) -o 1.
+
+%reject \x1. case x1 of inl x2 => 1 | inr x3 => x3 : (A + 1) -o 1.
+% (fixed -- kaustuv) Tue May 25 11:18:41 EDT 2004
+
+%prove  (A + 1) o- 1.
+
+% + / #
+%prove (A + #) -o #.
+%prove (A + #) o- #.
+
+% additive falsehood (0)
+% intro / elim
+% no intro rule
+%prove 0 -o (# -o C).
+
+% -o / 0
+%prove (0 -o A) -o #.
+%prove (0 -o A) o- #.
+
+% * / 0
+%prove (0 * A) -o 0.
+%prove (0 * A) o- 0.
+
+% & / 0
+%prove (0 & A) -o 0.
+%prove (0 & A) o- 0.
+
+% exponential (!)
+% intro/elim are degenerate without ->
+
+% structural rules
+%prove (A -o C) -o (!A -o C).
+%prove (!A -o (!A -o C)) -o (!A -o C).
+%prove C -o (!A -o C).
+%prove !A -o A.
+
+% ! / !
+%prove !!A -o !A.
+%prove !!A o- !A.
+
+% ! / -o
+%prove !(A -o B) -o (!A -o !B).
+%refute 100 : !(A -o B) o- (!A -o !B).
+%reject \x1. ! \x2. ! (x1 (! x2)) : !(A -o B) o- (!A -o !B).
+
+% ! / *
+%refute 100 : !(A * B) -o (!A * !B).
+%reject \x1. let !u1 = x1 in let x2 * x3 = u1 in !x2 * !x3 end end
+        : !(A * B) -o (!A * !B).
+%prove !(A * B) o- (!A * !B).
+%refute 100 : !(A * B) -o (!A & !B).
+%reject \x1. let !u1 = x1 in let x2 * x3 = u1 in (!x2, !x3) end end
+        : !(A * B) -o (!A & !B).
+%refute 100 : !(A * B) o- (!A & !B).
+%reject \x1. let !u1 = fst x1 in let !u2 = snd x1 in !(u1 * u2) end end
+        : !(A * B) o- (!A & !B).
+
+% ! / &
+%prove !(A & B) -o (!A * !B).
+%prove !(A & B) o- (!A * !B).
+%prove !(A & B) -o (!A & !B).
+%refute 100 : !(A & B) o- (!A & !B).
+%reject \x1. let !u1 = fst x1 in let !u2 = snd x1 in !(u1, u2) end end
+        : !(A & B) o- (!A & !B).
+
+% ! / 1
+%prove !1 -o 1.
+%prove !1 o- 1.
+%prove !1 -o #.
+%refute 100 : !1 o- #.
+%reject \x. !1 : !1 o- #.
+
+% ! / #
+%prove !# -o 1.
+%prove !# o- 1.
+%prove !# -o #.
+%refute 100 : !# o- #.
+%reject \x. !() : !# o- #.
+
+% ! / 0
+%prove !0 -o 0.
+%prove !0 o- 0.
+
+% ! / +
+%refute 100 : !(A + B) -o (!A + !B).
+%reject \x1. let !u1 = x1 in case u1 of inl x2 => inl (! x2) | inr x3 => inr (! x3) end
+        : !(A + B) -o (!A + !B).
+%prove !(A + B) o- (!A + !B).
+

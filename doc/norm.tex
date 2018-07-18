@@ -1,0 +1,73 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{enumerate}
+\usepackage{fullpage}
+\usepackage{linear}
+\usepackage{txfonts}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\title{Named normalization with explicit substitutions}
+\author{Various Artists}
+
+\allowdisplaybreaks[4]
+
+\begin{document}
+
+\maketitle 
+
+\sdef{::=}{\Coloneq}
+\def\SSP{\hspace{1em}}
+\def\OR{\hspace{.5em}\vrule\hspace{.5em}}
+
+\sdef{ss}{\sigma}
+\sdef{rr}{\rho}
+\sdef{//}{\mathbin{\varparallel}}
+
+\sdef{-->}{\longrightarrow}
+
+\sdef{[[}{\left\llbracket}
+\sdef{]]}{\right\rrbracket\;}
+
+\sdef{FST}{\mathop{\mathtt{FST}}}
+\sdef{SND}{\mathop{\mathtt{SND}}}
+\sdef{APP}{\mathop{\mathtt{APP}}}
+
+\sdef{commute}{\mathop{\mathtt{commute}}}
+
+\begin{gather*}
+  \I{"[[ ss ; rr ]] u ==> n"}
+    {"rr ( u ) = v" & "ss ( v ) = n"}
+  \SP
+  \I{"[[ ss ; rr ]] fst i ==> FST n"}
+    {"[[ ss ; rr ]] i ==> n"}
+  \SP
+  \I{"[[ ss ; rr ]] snd i ==> SND n"}
+    {"[[ ss ; rr ]] i ==> n"}
+  \SP
+  \I{"[[ ss ; rr ]] i\ c ==> APP\ n_1\ n_2"}
+    {"[[ ss ; rr ]] i ==> n_1" & "[[ ss ; rr ]] c --> n_2"}
+\end{gather*}
+
+\begin{align*}
+  "FST r" &= "fst r" & "SND r" &= "snd r"\\
+  "FST n" &= 
+  \begin{cases}
+    "n_1" & "{{if }} n = (n_1, n_2)" \\
+    "commute\ FST\ n" & \text{otherwise}
+  \end{cases} &
+  "SND n" &= 
+  \begin{cases}
+    "n_2" & "{{if }} n = (n_1, n_2)" \\
+    "commute\ SND\ n" & \text{otherwise}
+  \end{cases}
+\end{align*}
+\begin{align*}
+  "APP\ r\ n" &= "r\ n" \\
+  "APP\ ( lam u. n_1 )\ n_2" &= "n {{ where }} [[ n_2 / v ; v / u ]] n_1 ==> n {{ and }} v {{ fresh}}" \\
+  "APP\ n_1\ n_2" &= "commute\ ( fn ( vs , n ) => APP\ n\ n_2 )\ n_1"
+\end{align*}
+
+\end{document}

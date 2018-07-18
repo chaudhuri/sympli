@@ -1,0 +1,84 @@
+2004-07-10  Kaustuv Chaudhuri  <kaustuv+@cs.cmu.edu>
+
+	* Added focused rule derivation; non-interference for linear
+	assumptions; qbf -> MAELL compiler; some hard test cases.
+
+	* frontend/prop.grm: o-o and <-> added.	
+
+2004-06-26  Kaustuv Chaudhuri  <kaustuv+@cs.cmu.edu>
+
+	* top/engine.fun: now uses the new rule interface; no longer has
+	any notion of 'unary', 'binary', etc., so when lit2 and rule2 can
+	be simply dropped into place.
+	
+	* core/rule.sml: updated to use new rule type; failures are now
+	even earlier
+
+	* core/rule.sig: new rule type
+
+2004-06-23  Kaustuv Chaudhuri  <kaustuv+@cs.cmu.edu>
+
+	* proof/onf.sml: 1&A is normalized to A&1.
+
+	* core/lit.sml: Added a register. utils/label.sml no longer
+	defines "associate" and "find".
+
+	* proof/chronicle.sml: Added
+
+	* proof/chronicle.sig: Added
+
+2004-06-21  Kaustuv Chaudhuri  <kaustuv+@cs.cmu.edu>
+
+	* core/lit2.sml: two phase labelling
+
+	* core/lit2.sig: two phase labelling
+
+2004-06-19  Kaustuv Chaudhuri  <kaustuv+@cs.cmu.edu>
+
+	* core/rule.sml: uses the new Sequent.remove functionality The
+	operations 'concat' and 'adjoin' are now in sequent.sml, as are
+	the weak equality tests (now known as 'affixion').
+
+	* core/sequent.sml: Sequent.extract is gone; replaced with
+	Sequent.remove and an extraction mode ('emode') type.
+	Additionally, the operations 'join' and 'add' are now defined here
+	instead of in rule.sml.
+
+	* core/sequent.sig: updating to new style of additive and
+	multiplicative rules; also commented
+
+2004-06-12  Kaustuv Chaudhuri  <kaustuv+@cs.cmu.edu>
+
+	* core/lit.sml: Added invariants for labelling.
+
+	* proof/norm-kc.fun (FoldNormFn.renr): removed the case for Chk,
+	so it will raise a Match exception if it gets there.
+
+	* core/lit.sig: Added some comments.
+
+	* core/global.sml: removed.
+
+	* core/prop.sml: Added some comments.
+
+	* core/prop.sig: Added the pskel type and some comments.
+
+	* proof/proof.sml: Added invariant annotations.
+
+	* proof/proof.sig: Added invariant annotations.
+
+2004-06-11  Kaustuv Chaudhuri  <kaustuv+@cs.cmu.edu>
+
+	* proof/norm-kc.fun (FoldNormFn): Added explicit alpha-varying.
+
+2004-06-10  Kaustuv Chaudhuri  <kaustuv+@cs.cmu.edu>
+
+	* proof/norm-kc.fun (FoldNormFn.normc): added a check for a rather
+	unimaginable corner case for the elim-applicators. Need to verify
+	if that corner case can actually ever arise.
+	(FoldNormFn): Cleaned up the invariants; they mostly hold, except
+	for APP.
+
+2004-06-08  Kaustuv Chaudhuri  <kaustuv+@cs.cmu.edu>
+
+	* TODO: popped off a few finished things.
+

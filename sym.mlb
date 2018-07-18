@@ -1,0 +1,64 @@
+$(SML_LIB)/basis/basis.mlb
+$(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
+$(SML_LIB)/smlnj-lib/PP/pp-lib.mlb
+$(SML_LIB)/mlyacc-lib/mlyacc-lib.mlb
+
+util/pp-string.sml
+
+util/mark.sml
+util/errormsg.sml
+
+util/flag.sml
+util/util.sml
+util/collection.sml
+util/comm.sml
+util/var.sig util/var.sml
+
+util/timing/timing.sml
+util/timing/timers.sig
+util/timing/timers.fun
+util/timing/timers.sml
+
+frontend/bias.sml
+
+core/prop.sig core/prop.sml
+util/label.sig util/label.sml
+
+core/lit.sig core/lit.sml
+
+proof/proof.sig proof/proof.sml
+proof/chronicle.sig proof/chronicle.sml
+proof/build.sml
+
+proof/norm.sig
+proof/norm-fp.sml
+proof/fold.sml proof/norm-kc.fun
+proof/norm.sml
+proof/onf.sig proof/onf.sml
+
+
+core/sequent.sig core/sequent.sml
+
+core/rule.sig core/rule.sml
+
+core/rule-gen.sig
+core/basic-rule-gen.sml
+core/frontier.sig core/frontier.sml
+core/rule-gen.sml
+
+frontend/extsyn.sml
+frontend/prop.grm.sig
+frontend/prop.lex.sml
+frontend/prop.grm.sml
+frontend/parse.sml
+
+top/database.sig
+top/rules.sml
+top/engine.sig top/engine.fun
+
+top/db-triv.sml
+top/db-indexed.sml
+top/engine.sml
+
+top/top.sml
+top/top-mlton.sml

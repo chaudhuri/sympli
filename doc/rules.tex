@@ -1,0 +1,190 @@
+\documentclass{article}
+
+\usepackage{linear}
+\usepackage{txfonts}
+
+\usepackage{fullpage}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\def\SP{\hspace{2em plus .1em minus 1em}}
+
+\begin{center}\framebox{
+  \begin{minipage}{0.99\textwidth}
+    \textbf{\Large Rules and related definitions} \\
+    Author: Kaustuv Chaudhuri \hfill \today
+  \end{minipage}}
+\end{center}
+
+\subsection*{Rules}
+
+\bgroup\small
+
+\textbf{Structural}
+\begin{gather*}
+  \I[init]{". ; . ; A -->^0 A"}
+  \SP
+  \I[promote]{"YY' . ( . ; A ; . ) -->^w gg"}{"YY -->^w gg" & "YY' = YY -_s A"}
+  \SP
+  \I[copy]{"YY' . ( A ; . ; . ) -->^w gg"}{"YY -->^w gg" & "YY' = YY -_s A"}
+\end{gather*}
+
+\textbf{Multiplicative}
+\begin{gather*}
+  \I["tens_R"]{"YY_1 . YY_2 -->^{w_1 or w_2} A tens B"}
+    {"YY_1 -->^{w_1} A" & "YY_2 -->^{w_2} B"}
+  \\
+  \I["tens_{L0}"]{"YY', A tens B -->^0 C"}
+    {"YY -->^0 C" & "YY' = YY - A - B"}
+  \SP
+  \I["tens_{L1}"]{"YY', A tens B -->^1 gg"}
+    {"YY -->^1 gg" & "YY' = YY - A -_? B"}
+  \SP
+  \I["tens_{L2}"]{"YY', A tens B -->^1 gg"}
+    {"YY -->^1 gg" & "YY' = YY -_? A - B"}
+  \\[1em]
+  \Ic["one_R"]{". ; . ; . -->^0 one"}{}
+  \SP
+  \text{no "one_L"}
+  \\[1em]
+  \I["-o_{R0}"]{"YY' -->^0 A -o B"}{"YY -->^0 B" & "YY' = YY - A"}
+  \SP
+  \I["-o_{R1}"]{"YY' -->^1 A -o B"}{"YY -->^1 B" & "YY' = YY -_? A"}
+  \SP
+  \I["-o_{R2}"]{"YY' -->^1 A -o B"}{"YY -->^1 gg" & "YY' = YY - A" & "gg \subseteq B"}
+  \\
+  \I["-o_L"]{"( YY . YY'' ), A -o B -->^{w_1 or w_2} gg"}
+    {"YY -->^{w_1} A" & "YY' -->^{w_2} gg" & "YY'' = YY' - B"}
+\end{gather*}
+
+\textbf{Additive}
+\begin{gather*}
+  \I["with_R"]{"YY_1 / w_1 + YY_2 / w_2 -->^{w_1 and w_2} A with B"}
+    {"YY_1 -->^{w_1} A" & "YY_2 -->^{w_2} B"}
+  \\
+  \I["with_{L1}"]{"YY', A with B -->^w gg"}{"YY -->^w gg" & "YY' = YY - A" & "B \neq one"}
+  \SP
+  \I["with_{L2}"]{"YY', A with B -->^w gg"}{"YY -->^w gg" & "YY' = YY - B" & "A \neq one"}
+  \\[1em]
+  \Ic["top_R"]{". ; . ; . -->^1 top"}{}
+  \SP
+  \text{no "top_L"}
+  \\[1em]
+  \I["choice_{R1}"]{"YY -->^w A choice B"}{"YY -->^w A"}
+  \SP
+  \I["choice_{R2}"]{"YY -->^w A choice B"}{"YY -->^w B"}
+  \\
+  \I["choice_L"]{"( YY_1' / w_1 + YY_2' / w_2 ), A choice B -->^{w_1 and w_2} gg_1 \cup gg_2"}
+    {"YY_1 -->^{w_1} gg_1" &
+     "YY_1'" = \begin{cases}"YY_1" & "{{if }} A = one" \\ "YY_1 - A" & \text{otherwise}\end{cases} &
+     "YY_2 -->^{w_2} gg_2" &
+     "YY_2'" = \begin{cases}"YY_2" & "{{if }} B = one" \\ "YY_2 - B" & \text{otherwise}\end{cases}
+    }
+  \\[1em]
+  \text{no "zero_R"}
+  \SP
+  \Ic["zero_L"]{". ; . ; zero -->^1 ."}{}
+\end{gather*}
+
+\textbf{Exponential}
+\begin{gather*}
+  \Ic["!_R"]{"GG ; . ; . -->^0 {! A}"}{"GG ; . ; . -->^w A"}
+  \SP
+  \text{no "!_L"}
+\end{gather*}
+
+\egroup
+
+
+\subsection*{Extraction}
+\label{sec:extraction}
+
+There are three kinds of extraction -- strict ("-_s"), normal ("-") and lax ("-_?").
+
+\paragraph{Strict extraction}
+\label{sec:strict-extraction}
+
+\begin{align*}
+  \left.
+    \begin{array}{r}
+      "( GG, A ; PP ; DD ) -_s {!A}" \\
+      "( GG ; PP, A ; DD ) -_s A with one" \\
+      "( GG ; PP, A ; DD ) -_s one with A" \\
+      "( GG ; PP ; DD, A ) -_s A"
+    \end{array}
+  \right\} &= "GG ; PP ; DD" \\
+\end{align*}
+
+\paragraph{Normal extraction}
+\label{sec:normal-extraction}
+
+\begin{align*}
+  \left.
+    \begin{array}{r}
+      "( GG, A ; PP ; DD ) - {!A}" \\
+      "{{if }} A \notin GG {{ then }} ( GG ; PP ; DD ) - {!A}" \\
+      "( GG ; PP, A ; DD ) - A with one" \\
+      "{{if }} A \notin PP {{ then }} ( GG ; PP ; DD ) - A with one" \\
+      "( GG ; PP, A ; DD ) - one with A" \\
+      "{{if }} A \notin PP {{ then }} ( GG ; PP ; DD ) - one with A" \\
+      "( GG ; PP ; DD, A ) - A"
+    \end{array}
+  \right\} &= "GG ; PP ; DD" \\
+\end{align*}
+
+\paragraph{Lax extraction}
+\label{sec:lax-extraction}
+
+is like normal extraction, with one additional case:
+\begin{align*}
+  \left.
+    \begin{array}{r}
+      "{{if }} A \notin DD {{ then }} ( GG ; PP ; DD ) -_? A"
+    \end{array}
+  \right\} &= "GG ; PP ; DD" \\
+\end{align*}
+
+
+\subsection*{Affixion}
+\label{sec:affixion}
+
+There are two ways to affix contexts to each other -- multiplicatively
+or additively.
+
+
+\paragraph{Multiplicative}
+\label{sec:multiplicative}
+
+affixion is total, with the following simple rule:
+\begin{gather*}
+  "( GG ; PP ; DD ) . ( GG' ; PP' ; DD' )\ =\ GG, GG' ; PP, PP' ; DD, DD'"
+\end{gather*}
+A slight abbreviation: "( GG ; PP ; DD ), A\ = \ GG ; PP ; DD, A"
+
+\paragraph{Additive}
+\label{sec:additive}
+
+\sdef{lub}{\mathop{\text{lub}}}
+
+affixion is partial and depends on weakening annotations.
+\begin{gather*}
+  "( GG_1 ; PP_1 ; DD_1 ) / w_1 + ( GG_2 ; PP_2 ; DD_2 ) / w_2"\ =\
+  "GG_1, GG_2 ; PP_1 / 1 + PP_2 / 1 ; DD_1 / w_1 + DD_2 / w_2"
+\end{gather*}
+where the affixion of multisets is defined as follows:
+\begin{gather*}
+  "DD_1 / w_1 + DD_2 / w_2"\ = \
+  \begin{cases}
+    "lub ( DD_1, DD_2 )" & "{{if }} w_1 = w_2 = 1" \\
+    "DD_1" & "{{if }} w_1 = 1 and w_2 = 0 and DD_1 \subseteq DD_2" \\
+    "DD_2" & "{{if }} w_2 = 1 and w_1 = 0 and DD_2 \subseteq DD_1" \\
+    "DD_1" & "{{if }} w_1 = w_2 = 0 and DD_1 = DD_2"
+  \end{cases}
+\end{gather*}
+and "lub ( DD_1, DD_2 )" is the least multiset to include both "DD_1"
+and "DD_2".\footnote{This particular operation will be more complex in
+  the first-order case.}
+
+\end{document}

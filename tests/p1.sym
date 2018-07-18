@@ -1,0 +1,8 @@
+% bind p1 : 'p1.log'.
+%log validation : highlevel.
+%log timers : highlevel.
+%log counters : highlevel.
+
+%prove (Empty * FreeA * OnATab -o HoldsA) ->
+       (Empty * FreeA * OnAB -o HoldsA * FreeB) ->
+       ((OnATab * FreeB) + OnAB) * FreeA * Empty * OnBC * OnCTab -o HoldsA * FreeB * #.

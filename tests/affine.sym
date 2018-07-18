@@ -1,0 +1,39 @@
+(* 
+ * A demonstration of the efficiency of the affine zone
+ * Author: Kaustuv Chaudhuri
+ *)
+
+
+%log counters : highlevel.
+% log fsubs : highlevel.                 % to see the generated sequents
+
+
+(*
+ * The affine zone contains free subformulas of the goal sequent (after
+ * 1-normalization) that are of the form A&1. However, in linear logic
+ * 1 is equivalent to !#, and so these formulas can also be represented
+ * as (A & !#). The essential structure of (A & !#) is left untouched
+ * during 1-normalization, From a simple examination of the rules, it
+ * is clear that (A & !#) has the same affineness properties as A & 1.
+ *)
+
+(* For provable formulas &1 generates far fewer sequents than &!# *)
+
+%prove (P & !#) -o (Q & !#) -o (A + B -o C) -o (A -o C) + (B -o C).
+%prove (P & 1) -o (Q & 1) -o (A + B -o C) -o (A -o C) + (B -o C).
+
+(* 
+ * For unprovable formulas, &!# prevents saturation, whereas &!
+ * saturates immediately.
+ *)
+
+%refute 1000 : (P & !#) -o (Q & !#) -o (A & B -o C) -o (A -o C) + (B -o C).
+%refute (P & 1) -o (Q & 1) -o (A & B -o C) -o (A -o C) + (B -o C).
+
+(* 
+ * Thus, it is *much* better to use &1 instead of &!# for locally
+ * affine assumptions
+ * 
+ * In a future version of the prover the 1nf algorithm may be tweaked
+ * to account for !#.
+ *)

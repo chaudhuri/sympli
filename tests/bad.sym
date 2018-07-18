@@ -1,0 +1,9 @@
+% Really bad examples
+
+%log counters : highlevel.
+% log fsubs : highlevel.
+%log timers : highlevel.
+
+
+% Many copies of A in the linear context
+%refute (A -o 1) -> A -o 0.

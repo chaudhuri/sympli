@@ -1,0 +1,255 @@
+\documentclass{article}
+
+\usepackage[fleqn]{amsmath}
+\usepackage{syn}
+
+\usepackage{enumerate}
+
+% only one of the two following two lines is necessary; txfonts has better glyphs
+% \usepackage{stmaryrd}
+\usepackage{txfonts}
+
+\usepackage{fullpage}
+\usepackage{proof}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\allowdisplaybreaks[4]
+
+\title{proof rewriting -- $\mathbf 1$-normal form}
+\author{Kaustuv Chaudhuri}
+
+\begin{document}
+
+\maketitle
+
+\sdef{G}{\Gamma}
+\sdef{D}{\Delta}
+\sdef{|-}{\vdash}
+
+\sdef{==>}{\Longrightarrow}
+\sdef{<==}{\Longleftarrow}
+
+\sdef{aa}{\alpha}
+\sdef{bb}{\beta}
+\sdef{cc}{\gamma}
+
+\sdef{/}{\mathbin{\backslash}}
+\sdef{;}{\mathbin{\mathbf{;}}}
+\sdef{and}{\wedge}
+\sdef{or}{\vee}
+
+\makeatletter
+\let\I@align=\vbox
+\def\Ic{\let\I@align=\vcenter\I}
+\newcommand{\I}[2][]{\def\I@args{[#1]{#2\mathstrut}}\I@more}
+\def\I@more{\@ifnextchar\bgroup\I@pre\I@nopre}
+\def\I@nopre{\expandafter\I@\I@args{}}
+\def\I@pre#1{\expandafter\I@\I@args{#1\mathstrut}}
+\def\I@[#1]#2#3{\I@align{\let\I@align=\vbox\infer[#1]{#2}{#3}}}
+\makeatother
+
+\sdef{tens}{\otimes}
+
+\sdef{one}{\mathbf{1}}
+\sdef{zero}{\mathbf{0}}
+
+\sdef{top}{\top}
+
+\sdef{-o}{\multimap}
+\sdef{with}{\mathbin{\&}}
+\sdef{fst}{\mathop{\mathbf{fst}}}
+\sdef{snd}{\mathop{\mathbf{snd}}}
+
+\sdef{let}{\mathbf{let}\,}
+\sdef{in}{\mathbin{\mathbf{in}}}
+\sdef{end}{\,\mathbin{\mathbf{end}}}
+
+\sdef{choice}{\oplus}
+\sdef{inl}{\mathop{\mathbf{inl}}}
+\sdef{inr}{\mathop{\mathbf{inr}}}
+\sdef{case}{\mathbf{case}\,}
+\sdef{of}{\mathbin{\mathbf{of}}}
+\sdef{=>}{\mathbin{\Rightarrow}}
+\sdef{|}{\mathbin{|}}
+
+\sdef{abort}{\mathop{\mathbf{abort}}}
+
+\sdef{lam}#1.{\lambdaup #1.\;}
+
+\sdef{fn}#1.{\mathtt{fn}\;#1 \Rightarrow  }
+
+\def\SP{\hspace{2em plus 1em minus 1.5em}}
+
+\sdef{bar}#1{\overline{#1}}
+\sdef{onf}#1{\mathop{\mathsf{onf}}{(#1)}}
+\def\<{\left[}
+\def\>{\right]}
+
+\sdef{ml}#1{\mathtt{#1}}
+\sdef{->}{\rightarrow}
+
+"onf A = \< bar A, f, g \>" such that "f ==> A -o bar A" and "g ==> bar A -o A"
+
+\begin{enumerate}[{\underline{\textit{Case}}}.\ ]
+\item "A = P" or a constant; i.e., "bar A = A":
+  \begin{gather*}
+    "onf A = \< A, ( lam u. u : A -o A ), ( lam u. u : A -o A ) \>"
+  \end{gather*}
+
+
+\item "A = B tens C".
+  \begin{align*}
+    "onf B" &= "\< bar B, f_B, g_B \>" \\
+    "onf C" &= "\< bar C, f_C, g_C \>"
+  \end{align*}
+  \begin{enumerate}[{\underline{\textit{Subcase}}}.\ ]
+  \item "bar B = one", i.e., "bar{B tens C} = bar C":
+    \begin{gather*}
+      "onf A" =
+      \< \begin{array}{l}
+           "bar C", \\
+           "\left( lam u. let v_1 tens v_2 = u in let one = f_B\ v_1 in f_C\ v_2 end end : B tens C -o bar C \right)",\\
+           "\left( lam u. g_B\ one tens g_C\ u : bar C -o B tens C \right)"
+         \end{array} \>
+    \end{gather*}
+
+  \item "bar C = one", i.e., "bar{B tens C} = bar B":
+    \begin{gather*}
+      "onf R" =
+      \< \begin{array}{l}
+           "bar B", \\
+           "\left( lam u. let v_1 tens v_2 = u in let one = f_C\ v_2 in f_B\ v_1 end end : B tens C -o bar B \right)",\\
+           "\left( lam u. g_B\ u tens g_C\ one : bar B -o B tens C \right)"
+         \end{array} \>
+    \end{gather*}
+
+  \item neither "bar B = one" nor "bar C = one", i.e., "bar{B tens C} = bar B tens bar C":
+    \begin{gather*}
+      "onf A" =
+      \< \begin{array}{l}
+           "bar B tens bar C", \\
+           "\left( lam u. let v_1 tens v_2 = u in f_B\ v_1 tens f_C\ v_2 end : B tens C -o bar B tens bar C \right)",\\
+           "\left( lam u. let v_1 tens v_2 = u in g_B\ v_1 tens g_C\ v_2 end : bar B tens bar C -o B tens C \right)"
+         \end{array} \>
+    \end{gather*}
+  \end{enumerate}
+
+
+\item "A = B -o C".
+  \begin{align*}
+    "onf B" &= "\< bar B, f_B, g_B \>" \\
+    "onf C" &= "\< bar C, f_C, g_C \>"
+  \end{align*}
+
+  \begin{enumerate}[{\underline{\textit{Subcase}}}.\ ]
+  \item "bar B = one", i.e., "bar{B -o C} = bar C":
+    \begin{gather*}
+      "onf A" =
+      \< \begin{array}{l}
+           "bar C", \\
+           "\left( lam u. f_C\ ( u\ ( g_B\ one ) ) : (B -o C) -o bar C \right)",\\
+           "\left( lam u. lam v. let one = f_B\ v in g_C\ u end : bar C -o B -o C \right)"
+         \end{array} \>
+    \end{gather*}
+
+  \item "bar B \neq one", i.e., "bar{B -o C} = bar B -o bar C":
+    \begin{gather*}
+      "onf A" =
+      \< \begin{array}{l}
+           "bar B -o bar C", \\
+           "\left( lam u. lam v. f_C\ ( u\ ( g_B\ v ) ) : (B -o C) -o bar B -o bar C \right)",\\
+           "\left( lam u. lam v. g_C\ ( u\ ( f_B\ v ) ) : ( bar B -o bar C) -o B -o C \right)"
+         \end{array} \>
+    \end{gather*}
+  \end{enumerate}
+
+\item "A = B with C".
+  \begin{align*}
+    "onf B" &= "\< bar B, f_B, g_B \>" \\
+    "onf C" &= "\< bar C, f_C, g_C \>"
+  \end{align*}
+
+  \begin{enumerate}[{\underline{\textit{Subcase}}}.\ ]
+  \item "bar B = bar C = one", i.e., "bar{B with C} = one":
+    \begin{gather*}
+      "onf A" =
+      \< \begin{array}{l}
+           "one", \\
+           "\left( lam u. f_B\ ( fst u ) : B with C -o one \right)",\\
+           "\left( lam u. ( g_B\ u, g_C\ one ) : one -o B with C \right)"
+         \end{array} \>
+    \end{gather*}
+
+  \item either "bar B \ne one" or "bar C \ne one", i.e., "bar{B with C} = bar B with bar C":
+    \begin{gather*}
+      "onf A" =
+      \< \begin{array}{l}
+           "bar B with bar C", \\
+           "\left( lam u. ( f_B\ ( fst u ), f_C\ ( snd u ) ) : B with C -o bar B with bar C \right)",\\
+           "\left( lam u. ( g_B\ ( fst u ), g_C\ ( snd u ) ) : bar B with bar C -o B with C \right)"
+         \end{array} \>
+    \end{gather*}
+  \end{enumerate}
+
+\item "A = B choice C".
+  \begin{align*}
+    "onf B" &= "\< bar B, f_B, g_B \>" \\
+    "onf C" &= "\< bar C, f_C, g_C \>"
+  \end{align*}
+
+  \begin{enumerate}[{\underline{\textit{Subcase}}}.\ ]
+  \item "bar B = bar C = one", i.e., "bar{B choice C} = one":
+    \begin{gather*}
+      "onf A" =
+      \< \begin{array}{l}
+           "one", \\
+           "\left( lam u. case u of inl v_1 => f_B\ v_1 | inr v_2 => f_C\ v_2 : B choice C -o one \right)",\\
+           "\left( lam u. inl ( g_B\ one ) : one -o B choice C \right)"
+         \end{array} \>
+    \end{gather*}
+
+  \item either "bar B \ne one" or "bar C \ne one", i.e., "bar{B choice C} = bar B choice bar C":
+    \begin{gather*}
+      "onf A" =
+      \< \begin{array}{l}
+           "bar B choice bar C", \\
+           "\left( lam u. case u of inl v_1 => inl ( f_B\ v_1 ) | inr v_2 => inr ( f_C\ v_2 )
+                   : B choice C -o bar B choice bar C \right)",\\
+           "\left( lam u. case u of inl v_1 => inl ( g_B\ v_1 ) | inr v_2 => inr ( g_C\ v_2 )
+                   : bar B choice bar C -o B choice C \right)"
+         \end{array} \>
+    \end{gather*}
+  \end{enumerate}
+
+\item "A = {!B}".
+  \begin{gather*}
+    "onf B = \< bar B, f_B, g_B \>"
+  \end{gather*}
+
+  \begin{enumerate}[{\underline{\textit{Subcase}}}.\ ]
+  \item "bar B = one", i.e., "bar{!B} = one":
+    \begin{gather*}
+      "onf A" = 
+      \< \begin{array}{l}
+           "one", \\
+           "\left( lam u. let !v = u in f_B\ v end : {!B} -o one \right)",\\
+           "\left( lam u. let one = u in {! ( g_B one )} end : one -o {!B} \right)"
+         \end{array} \>
+    \end{gather*}
+
+  \item "bar B \neq one", i.e., "bar{!B} = {! bar B}":
+    \begin{gather*}
+      "onf A" = 
+      \< \begin{array}{l}
+           "one", \\
+           "\left( lam u. let !v = u in {! ( f_B\ v )} end : {!B} -o {! bar B} \right)",\\
+           "\left( lam u. let !v = u in {! ( g_B\ v )} end : {! bar B} -o {!B} \right)"
+         \end{array} \>
+    \end{gather*}
+  \end{enumerate}
+\end{enumerate}
+
+
+\end{document}

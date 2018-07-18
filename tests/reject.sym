@@ -1,0 +1,14 @@
+% hiding
+%reject \x. \x. x * x : A -o A -o A * A.
+
+% consumed variables are unusable
+%reject \x. let y = x in (x, y) end : A -o A & A.
+
+% can't bang any old thing
+%reject \x. !x : A -o !A.
+
+% actual discovered bug
+%reject \x. (let y = fst x in       % has to be snd, not fst
+             let 1 = y in
+               ()
+             end end) * 1 : A & 1 -o # * 1.

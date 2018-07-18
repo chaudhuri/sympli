@@ -1,0 +1,35 @@
+%log term : highlevel.
+
+% log sos : highlevel.
+
+% log sel : highlevel.
+% log fsubs : highlevel.
+% log active : highlevel.
+
+% log rules : highlevel.
+%log validation : highlevel.
+
+% log la : highlevel.
+
+% log onf1 : highlevel.
+% log onf2 : highlevel.
+% log onf3 : highlevel.
+
+%prove {A -o B} -o {A -o B}.
+
+% norm \v15. {let {v16} = v15 in \v17. let v18 = v16 v17 in v18 end end}.
+
+% prove  (a * b -o {c}) -> (c * d -o {e * b}) -> a * b * d -o {e * b}.
+
+
+(*
+%prove
+
+    (oat * fa * e -o {ha}) ->
+
+    (ha -o {oat * fa * e}) ->
+
+    (ha * fb -o {oab * fa * e}) ->
+
+    fa * oat * fb * e -o {oab * #}.
+*)

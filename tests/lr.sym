@@ -1,0 +1,21 @@
+%log counters : highlevel.
+%log timers : highlevel.
+
+%left Q, D, N, P, L.
+
+%prove
+(L -o Q * Q * Q * Q)
+-> (Q -o D * D * N)
+-> (D -o N * N)
+-> (N -o P * P * P * P * P)
+-> (L -o Q * Q * D * D * D * N * N * N * P * P * P * P * P).
+
+%right Q, D, N, P, L.
+
+%prove
+(L -o Q * Q * Q * Q)
+-> (Q -o D * D * N)
+-> (D -o N * N)
+-> (N -o P * P * P * P * P)
+-> (L -o Q * Q * D * D * D * N * N * N * P * P * P * P * P).
+

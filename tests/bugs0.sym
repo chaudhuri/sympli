@@ -1,0 +1,37 @@
+%log setup : highlevel.
+%log counters : highlevel.
+
+% refute 100 : C -o (!A -o C).
+% fixed Wed May 19 18:57:52 EDT 2004
+
+% refute 100 : !!A -o !A.
+% fixed Wed May 19 18:57:45 EDT 2004
+
+% refute 100 : !# -o 1.
+% prove !# o- #.
+% fixed Wed May 19 18:45:46 EDT 2004
+
+% prove ((A & B) -o C) -o (A -o (B -o C)).
+% prove ((A & B) -o C) o- (A -o (B -o C)).
+% prove (A -o (B * C)) o- ((A -o B) * (A -o C)).
+% fixed Wed May 19 15:03:47 2004
+
+% refute 100 : 1.
+% fixed Wed May 19 14:41:41 2004
+
+% prove (# -o A) -o A.
+% theorem
+
+% prove A -o (A * A).
+% fixed Wed May 19 14:56:32 2004
+
+% refute 100 : (A & 1) -o A.
+% fixed Wed May 19 14:51:05 2004
+
+% prove A -o (B -o (A & B)).
+% prove A -o (A & 1).
+% fixed Wed May 19 14:46:30 200
+
+% prove (A -o C * C) -> (C -o D) -> (D -o E * E) -> A -o E * E * E * E.
+
+

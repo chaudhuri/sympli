@@ -1,0 +1,19 @@
+%log counters : highlevel.
+%log timers : highlevel.
+%prove (A -o A) & (B -o B) & (C -o C) & (D -o D).
+%prove (A -o A) * (B -o B) * (C -o C) * (D -o D).
+%prove (A -> A) & (B -> B) & (C -> C) & (D -> D).
+%prove (A -> A) * (B -> B) * (C -> C) * (D -> D).
+
+%prove (!A + !B) -> (!A + (!B -o 0)) -> ((!A -o 0) + !B) -> ((!A -o 0) + (!B -o 0)) -> 0.
+
+(* could not prove in ~30 min, Thu Jul 15 00:43:54 2004 -fp *)
+%prove (!A + !B + !C) -> (!A + (!B -o 0) + !C) -> ((!A -o 0) + !B + !C) -> ((!A -o 0) + (!B -o 0) + !C)
+-> (!A + !B + (!C -o 0)) -> (!A + (!B -o 0) + (!C -o 0)) -> ((!A -o 0) + !B + (!C -o 0)) -> ((!A -o 0) + (!B -o 0) + (!C -o 0))
+-> 0.
+
+%prove (!A + !B + !C + !D) -> (!A + (!B -o 0) + !C + !D) -> ((!A -o 0) + !B + !C + !D) -> ((!A -o 0) + (!B -o 0) + !C + !D)
+-> (!A + !B + (!C -o 0) + !D) -> (!A + (!B -o 0) + (!C -o 0) + !D) -> ((!A -o 0) + !B + (!C -o 0) + !D) -> ((!A -o 0) + (!B -o 0) + (!C -o 0) + !D)
+-> (!A + !B + !C + (!D -o 0)) -> (!A + (!B -o 0) + !C + (!D -o 0)) -> ((!A -o 0) + !B + !C + (!D -o 0)) -> ((!A -o 0) + (!B -o 0) + !C + (!D -o 0))
+-> (!A + !B + (!C -o 0) + (!D -o 0)) -> (!A + (!B -o 0) + (!C -o 0) + (!D -o 0)) -> ((!A -o 0) + !B + (!C -o 0) + (!D -o 0)) -> ((!A -o 0) + (!B -o 0) + (!C -o 0) + (!D -o 0))
+-> 0.

@@ -1,0 +1,197 @@
+\documentclass{article}
+
+\usepackage{amsmath,amssymb}
+\usepackage{syn}
+
+% only one of the two following two lines is necessary; txfonts has better glyphs
+% \usepackage{stmaryrd}
+\usepackage{txfonts}
+
+\usepackage{fullpage}
+\usepackage{proof}
+
+\allowdisplaybreaks[4]
+
+\title{Proof Checking}
+\author{Kaustuv Chaudhuri}
+
+\begin{document}
+
+\maketitle
+
+\sdef{G}{\Gamma}
+\sdef{D}{\Delta}
+\sdef{|-}{\vdash}
+
+\sdef{==>}{\Longrightarrow}
+\sdef{<==}{\Longleftarrow}
+
+\sdef{aa}{\alpha}
+\sdef{bb}{\beta}
+\sdef{cc}{\gamma}
+
+\sdef{/}{\mathbin{\backslash}}
+\sdef{;}{\mathbin{\mathbf{;}}}
+\sdef{and}{\wedge}
+\sdef{or}{\vee}
+
+\makeatletter
+\let\I@align=\vbox
+\def\Ic{\let\I@align=\vcenter\I}
+\newcommand{\I}[2][]{\def\I@args{[#1]{#2\mathstrut}}\I@more}
+\def\I@more{\@ifnextchar\bgroup\I@pre\I@nopre}
+\def\I@nopre{\expandafter\I@\I@args{}}
+\def\I@pre#1{\expandafter\I@\I@args{#1\mathstrut}}
+\def\I@[#1]#2#3{\I@align{\let\I@align=\vbox\infer[#1]{#2}{#3}}}
+\makeatother
+
+\sdef{tens}{\otimes}
+
+\sdef{-o}{\multimap}
+\sdef{with}{\mathbin{\&}}
+\sdef{fst}{\mathop{\mathbf{fst}}}
+\sdef{snd}{\mathop{\mathbf{snd}}}
+
+\sdef{let}{\mathbf{let}\,}
+\sdef{in}{\mathbin{\mathbf{in}}}
+
+\sdef{choice}{\oplus}
+\sdef{inl}{\mathop{\mathbf{inl}}}
+\sdef{inr}{\mathop{\mathbf{inr}}}
+\sdef{case}{\mathbf{case}\,}
+\sdef{of}{\mathbin{\mathbf{of}}}
+\sdef{=>}{\mathbin{\Rightarrow}}
+\sdef{|}{\mathbin{|}}
+
+\sdef{abort}{\mathop{\mathbf{abort}}}
+
+\sdef{lam}#1.{\lambda #1.\;}
+
+\def\SP{\hspace{2em plus 1em minus 1.5em}}
+
+\small
+
+\fbox{"aa :: bb"} \SP "bb" is a refinement of "aa"
+
+\begin{gather*}
+  \I{"A :: A"}
+  \SP
+  \I{"\cdot :: aa"}
+  \SP
+  \I{"aa tens bb :: aa' tens bb'"}{"aa :: aa'" & "bb :: bb'"}
+  \SP
+  \I{"aa -o bb :: aa' -o bb'"}{"aa :: aa'" & "bb :: bb'"}
+  \SP
+  \I{"aa with bb :: aa' with bb'"}{"aa :: aa'" & "bb :: bb'"}
+  \SP
+  \I{"aa choice bb :: aa' choice bb'"}{"aa :: aa'" & "bb :: bb'"}
+  \SP
+  \I{"! aa :: {! aa'}"}{"aa :: aa'"}
+\end{gather*}
+
+\fbox{"G ; D_I / D_O |-_s i ==> aa"} \SP "i" synthesizes "aa"
+
+\begin{gather*}
+  \I{"G, w :: aa ; D / D |-_0 w ==> aa"}
+  \SP
+  \I{"G ; D, u : aa / D |-_0 u ==> aa"}
+  \SP
+  \I{"G ; D / D' |-_s (c : A) ==> A"}{"G ; D / D' |-_s c <== A"}
+  \\[1em]
+  \I{"G ; D / D'' |-_{s_1 or s_2} i\ c ==> cc"}
+    {"G ; D / D' |-_{s_1} i ==> aa"
+     &
+     "aa :: bb -o cc"
+     &
+     "G ; D' / D'' |-_{s_2} c <== bb"}
+  \\[1em]
+  \I{"G ; D / D' |-_s fst i ==> bb"}{"G ; D / D' |-_s i ==> aa" & "aa :: bb with cc"}
+  \SP
+  \I{"G ; D / D' |-_s snd i ==> cc"}{"G ; D / D' |-_s i ==> aa" & "aa :: bb with cc"}
+\end{gather*}
+
+\fbox{"G ; D_I / D_O |-_s c <== aa"} \SP "c" checks against "aa"
+
+\begin{gather*}
+  \I{"G ; D_I / D_O |-_s i <== bb"}
+    {"G ; D_I / D_O |-_s i ==> aa" & "aa :: bb"}
+  \\[1em]
+  \I{"G ; D / D'' |-_{s_1 or s_2} c_1 tens c_2 <== aa"}
+    {"aa :: bb tens cc" &
+     "G ; D / D' |-_{s_1} c_1 <== bb" &
+     "G ; D' / D'' |-_{s_2} c_2 <== cc"}
+  \\[1em]
+  \I{"G ; D / D'' - \{u, v\} |-_{s_1 or s_2} let u tens v = i in c <== cc"}
+    {"G ; D / D' |-_{s_1} i ==> aa" &
+     "aa :: bb tens bb'" &
+     "G ; D', u : bb, v : bb' / D'' |-_{s_2} c <== cc" &
+     \text{either } "s_2 = 1" \text{ or } "u, v \notin D"}
+  \\[1em]
+  \I{"G ; D / D |-_0 1 <== aa"}{"aa :: 1"}
+  \SP
+  \I{"G ; D / D'' |-_{s_1 or s_2} let 1 = i in c <== cc"}
+    {"G ; D / D' |-_{s_1} i ==> aa" &
+     "aa :: 1" &
+     "G ; D' / D'' |-_{s_2} c <== cc"}
+  \\[1em]
+  \I{"G ; D / D' - \{u\} |-_s lam u. c <== aa"}
+    {"aa :: bb -o bb'" &
+     "G ; D, u : bb / D' |-_s c <== bb'" &
+     \text{either } "s = 1" \text{ or } "u \notin D'"}
+  \\[1em]
+  \I{"G ; D / D_1 \cap D_2 |-_{s_1 and s_2} (c_1, c_2) <== aa"}
+    {"aa :: bb with bb'" &
+     "G ; D / D_1 |-_{s_1} c_1 <== bb" &
+     "G ; D / D_2 |-_{s_2} c_2 <== bb'" &
+     "D_1^{s_1} = D_2^{s_2}"}
+  \SP
+  \I{"G ; D / D |-_1 () <== aa"}{"aa :: \top"}
+  \\[1em]
+  \I{"G ; D / D' |-_s inl c <== aa"}
+    {"aa :: bb choice bb'" & "G ; D / D' |-_s c <== bb"}
+  \SP
+  \I{"G ; D / D' |-_s inr c <== aa"}
+    {"aa :: bb choice bb'" & "G ; D / D' |-_s c <== bb'"}
+  \\[1em]
+  \I{"G ; D / (D_1 - \{u\}) \cap (D_2 - \{v\}) |-_{s_i or (s_1 and s_2)} case i of u => c_1 | v => c_2 <== cc"}
+    {"G ; D / D' |-_{s_i} i ==> aa" &
+     "aa :: bb choice bb'" &
+     \begin{array}[b]{cc}
+       "G ; D', u : bb / D_1 |-_{s_1} c_1 <== cc" &
+         \text{either } "s_1 = 1" \text{ or } "u \notin D_1" \\
+       "G ; D', v : bb / D_2 |-_{s_2} c_2 <== cc" &
+         \text{either } "s_2 = 1" \text{ or } "v \notin D_2"
+     \end{array} &
+     "(D_1 - \{u\})^{s_1} = (D_2 - \{v\})^{s_2}"}
+   \\[1em]
+   \I{"G ; D / D' |-_s abort i <== cc"}
+     {"G ; D / D' |-_s i ==> aa" &
+      "aa :: 0"}
+   \\[1em]
+   \I{"G ; D / D |-_0 {!c} <== aa"}
+     {"aa :: {! bb}" & "G ; \cdot / \cdot |-_s c <== bb"}
+   \SP
+   \I{"G ; D / D'' |-_{s_1 or s_2} let !u = i in c <== cc"}
+     {"G ; D / D' |-_{s_1} u ==> aa" &
+      "aa :: {! bb}" &
+      "G, u :: bb ; D' / D'' |-_{s_2} c <== cc"}
+   \\[1em]
+   \I{"G ; D / D'' - \{u\} |-_{s_1 or s_2} let u = i in c <== cc"}
+     {"G ; D / D' |-_{s_1} i ==> aa" &
+      "G ; D', u : aa / D'' |-_{s_2} c <== cc" &
+      \text{either } "s_2 = 1" \text{ or } "u \notin D''"}
+\end{gather*}
+
+\fbox{"D_1^{s_1} = D_2^{s_2}"} \SP slack consistency
+
+\begin{gather*}
+  \I{"D_1 ^ 1 = D_2^1"}
+  \SP
+  \I{"D_1^0 = D_2^1"}{"D_2 \subseteq D_1"}
+  \SP
+  \I{"D_1^1 = D_2^0"}{"D_1 \subseteq D_2"}
+  \SP
+  \I{"D_1^0 = D_2^0"}{"D_1 = D_2"}
+\end{gather*}
+
+\end{document}

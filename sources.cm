@@ -1,0 +1,74 @@
+Group is
+
+#if defined (NEW_CM)
+   $/basis.cm
+   $/smlnj-lib.cm
+   $/pp-lib.cm
+   $/ml-yacc-lib.cm
+#else
+   util/smlnj-lib/Util/smlnj-lib.cm
+   util/smlnj-lib/PP/pp-lib.cm
+   ml-yacc-lib.cm
+#endif
+
+#if (SMLNJ_VERSION * 100 + SMLNJ_MINOR_VERSION >= 11046)
+  util/timing/timing-nj-new.sml
+#else
+  util/timing/timing-nj.sml
+#endif
+
+util/timing/timers.sig
+util/timing/timers.fun
+util/timing/timers.sml
+
+util/mark.sml
+util/errormsg.sml
+util/pp-string.sml
+util/flag.sml
+util/util.sml
+util/label.sig util/label.sml
+util/collection.sml
+util/comm.sml
+util/var.sig util/var.sml
+
+core/prop.sig core/prop.sml
+
+proof/chronicle.sig proof/chronicle.sml
+proof/proof.sig proof/proof.sml
+proof/build.sml
+
+proof/onf.sig proof/onf.sml
+
+proof/norm.sig
+proof/norm-fp.sml
+proof/fold.sml proof/norm-kc.fun
+proof/norm.sml
+
+core/lit.sig core/lit.sml
+core/sequent.sig core/sequent.sml
+
+core/rule.sig core/rule.sml
+
+core/rule-gen.sig
+core/basic-rule-gen.sml
+
+core/frontier.sig core/frontier.sml
+core/rule-gen.sml
+
+frontend/bias.sml
+
+frontend/extsyn.sml
+
+frontend/prop.grm
+frontend/prop.lex
+frontend/parse.sml
+
+top/database.sig
+top/rules.sml
+top/engine.sig top/engine.fun
+
+top/db-triv.sml
+top/db-indexed.sml
+top/engine.sml
+
+top/top.sml

@@ -1,0 +1,37 @@
+% bind uluc : 'uluc.log'.
+% log paranoia : uluc.
+
+%log validation : highlevel.
+%log timers : highlevel.
+
+% log database : highlevel.
+% log counters : highlevel.
+
+% name plan3_unr.
+%prove (D1 -o G1) ->
+       (D2 -o G2) ->
+       (D3 -o G3) ->
+
+       (G1 -o D2) ->
+       (G2 -o D3) ->
+
+       (X -o D1 + D2 + D3) ->
+       (G3 -o G) ->
+
+       X -o G.
+
+% name plan4_unr.
+%prove (D1 -o G1) ->
+       (D2 -o G2) ->
+       (D3 -o G3) ->
+       (D4 -o G4) ->
+
+       (G1 -o D3) ->
+       (G2 -o D3) ->
+       (G3 -o D4) ->
+      
+       (X -o D1 + D2 + D3 + D4) ->
+       (G4 -o G) ->
+
+       X -o G.
+

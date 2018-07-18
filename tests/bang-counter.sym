@@ -1,0 +1,5 @@
+%log term : highlevel.
+
+%prove !(A + B) -o !(B + A).
+
+%prove {A + B} -o {B + A}.

@@ -1,0 +1,88 @@
+(*
+ * A blocks-world example with and without the CLF monad
+ * Author: Kaustuv Chaudhuri
+ *)
+
+% the proof terms are obscene
+% log term : highlevel.
+
+%log counters : highlevel.
+
+%prove 
+
+  (on_a_tab * empty -o holds_a) ->
+  (on_a_b * free_a * empty -o holds_a * free_b) ->
+  (on_a_c * free_a * empty -o holds_a * free_c) ->
+
+  (on_b_tab * empty -o holds_b) ->
+  (on_b_a * free_b * empty -o holds_b * free_a) ->
+  (on_b_c * free_b * empty -o holds_b * free_c) ->
+
+  (on_c_tab * empty -o holds_c) ->
+  (on_c_a * free_c * empty -o holds_c * free_a) ->
+  (on_c_b * free_c * empty -o holds_c * free_b) ->
+
+  (holds_a -o empty * on_a_tab * free_a) ->
+  (holds_b -o empty * on_b_tab * free_b) ->
+  (holds_c -o empty * on_c_tab * free_c) ->
+
+  (holds_a * free_b -o empty * on_a_b * free_a) ->
+  (holds_a * free_c -o empty * on_a_c * free_a) ->
+
+  (holds_b * free_a -o empty * on_b_b * free_b) ->
+  (holds_b * free_c -o empty * on_b_c * free_b) ->
+
+  (holds_c * free_a -o empty * on_c_a * free_c) ->
+  (holds_c * free_b -o empty * on_c_b * free_c) ->
+
+        (* current state *)
+
+  on_a_tab * free_a *
+  on_b_c * free_b *
+  on_c_tab *
+  empty
+
+        (* goal state *)
+
+  -o on_c_a * empty * #.
+
+
+(*  CLF version  *)
+
+%prove 
+
+  (on_a_tab * empty -o {holds_a}) ->
+  (on_a_b * free_a * empty -o {holds_a * free_b}) ->
+  (on_a_c * free_a * empty -o {holds_a * free_c}) ->
+
+  (on_b_tab * empty -o {holds_b}) ->
+  (on_b_a * free_b * empty -o {holds_b * free_a}) ->
+  (on_b_c * free_b * empty -o {holds_b * free_c}) ->
+
+  (on_c_tab * empty -o {holds_c}) ->
+  (on_c_a * free_c * empty -o {holds_c * free_a}) ->
+  (on_c_b * free_c * empty -o {holds_c * free_b}) ->
+
+  (holds_a -o {empty * on_a_tab * free_a}) ->
+  (holds_b -o {empty * on_b_tab * free_b}) ->
+  (holds_c -o {empty * on_c_tab * free_c}) ->
+
+  (holds_a * free_b -o {empty * on_a_b * free_a}) ->
+  (holds_a * free_c -o {empty * on_a_c * free_a}) ->
+
+  (holds_b * free_a -o {empty * on_b_b * free_b}) ->
+  (holds_b * free_c -o {empty * on_b_c * free_b}) ->
+
+  (holds_c * free_a -o {empty * on_c_a * free_c}) ->
+  (holds_c * free_b -o {empty * on_c_b * free_c}) ->
+
+        (* current state *)
+
+  on_a_tab * free_a *
+  on_b_c * free_b *
+  on_c_tab *
+  empty
+
+        (* goal state *)
+
+  -o {on_c_a * #}.

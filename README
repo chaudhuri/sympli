@@ -1,0 +1,239 @@
+Compiling
+=========
+
+This requires the MLTon version 20130715 or later. It currently does
+not work with SML/NJ.
+
+You will need the mlyacc-lib library as well, which is generally
+distributed with the mlton-basis package.
+
+
+Running the MLTon compiled binary
+=================================
+
+Running "make" produces a program "sym". Use it as follows:
+
+  % ./sym [-e #] file1.sym file2.sym ...
+
+It runs the files one after the other.
+
+The -e option specifies which search engine to use.
+The engines and their numbers are in top/engine.sml.
+
+If you are trying one of the profiled binaries (eg. sym-time), perform
+the following steps in order:
+
+  % ./sym-time file1.sym file2.sym ...
+  % mlprof -raw true ./sym-time mlmon.out
+
+The "-raw true" flag shows raw values in addition to the percentage
+values.  If you want source line numbers also, use "-show-line true".
+
+
+
+Input format
+============
+
+  1. Comments
+ -------------
+
+ Block comments are delimited by balanced (* and *). They may be
+ arbitrarily nested.
+
+ Line comments start with '% ' (minus quotes), and ignore everything
+ until the end of line character.
+
+
+  2. Propositions
+ -----------------
+
+  Any identifier that is not a keyword is a valid atomic proposition.
+  Propositions are combined with the following unary and binary
+  connectives, listed in order of precedence:
+
+        !    exponential
+
+        *    tensor, left assoc.
+        &    with, left assoc.
+        +    choice, left assoc.
+        -o   linear impl., right assoc.
+        o-   linear impl., left assoc.  (B o- A == A -o B)
+        ->   implication, right assoc.  (A -> B == !A -o B)
+        <-   implication, left assoc.   (B <- A == !A -o B)
+        o-o  linear equiv., non assoc.  (A o-o B == (A -o B) & (A o- B))
+        <->  unr. equiv., non assoc.    (A <-> B == (A -> B) & (A <- B))
+
+        { }  CLF-monad
+
+  In addition are the propositional constants 0, 1 and #.
+
+        0    falsehood
+        1    unit (mult.)
+        #    truth (add.)
+
+  3. Proof terms
+ ----------------
+
+   Proofs are represented as normal natural deduction terms. They have
+   the following grammar.
+
+
+
+ (synthesizing) i  ::|  u                    hypothesis
+                     |  i c                  impl elim
+                     |  fst i  |  snd i      with elims
+                     |  [c]                  coercion
+
+     (checking) c  ::|  i                    silent coercion
+                     |  c * c                tensor intro
+                     |  let u * v = i in c end
+                                             tensor elim
+                     |  1                    one intro
+                     |  let 1 = i in c end   one elim
+                     |  \u. c                impl intro
+                     |  (c, c)               with intro
+                     |  ()                   top intro
+                     |  inl c  |  inr c      choice intros
+                     |  case i of
+                          inl u => c
+                        | inr u => c         choice elim
+                     |  abort i              zero elim
+                     |  !c                   bang intro
+                     |  let !u = i in c end  bang elim
+                     |  {c}                  monad intro
+                     |  let {u} = i in c end monad elim
+
+                     |  let u = i in c end   delayed linear subst
+                     |  ulet w = i in c end  delayed unrestr. subst
+
+
+  Proof terms with the [] coercion are not normal, and cannot be
+  checked.  Non-normal proof terms are produced during the
+  proof-maintenance phase, but they are normalized before checking.
+
+  NOTE TO USERS OF NON-MONADIC VERSION: The CLF monad is written using
+  {}. This is different from the {} coercion of earlier versions.
+
+
+  4. Directives
+ ---------------
+
+  All directives are prefixed by '%', with no following space. They
+  are as follows.
+
+
+    %prove <prop>.
+
+             Proves a the given proposition, and:
+
+
+    %refute [<number> :] <prop>.
+
+             Attempt to perform <number> (default: infinite)
+             iterations for the OTTER loop, and then succeeds; but
+             fail if a proof is found.
+
+
+    %include 'filename.sym'.
+
+             Process named file.
+
+
+    %norm <checking>.
+
+             Take the given closed checking term and calculate its
+             beta-gamma-normal form.
+
+
+    %check <checking> : <prop>.
+    %reject <checking> : <prop>.
+
+             Check (or reject) a given closed *normal* proof term
+             against a given proposition.
+
+             Attempts to check (reject) a term containing [] will
+             always fail (succeed).
+
+
+    %channel <channel>.
+
+             Allocates a new channel of output, and binds it to
+             standard out.  Channel names are any valid identifier.
+
+             By default there are two channels: 'highlevel' and
+             'error', both bound to the standard out.
+
+
+    %bind <channel> : 'somefilename.log'.
+
+             Send all output to specified channel from now on to
+             somefilename.log.  The channel need not have been
+             specified with %channel earlier. You can rebind channels,
+             in which case the old file (if any) that the channel was
+             bound to is closed.
+
+             NOTE: if you bind to a file twice in one run, you'll end
+             up overwriting all the output of the first run
+
+
+    %log <operation> : <channel>.
+  
+             Log the specified operation on the specified
+             channel. Operation names are valid identifiers.
+
+             The following are the documented operations:
+
+                cfg -- output produced while reading the input file
+                       and delegating to various components. This is
+                       on 'highlevel' by default.
+
+                setup -- during a proof or a refute, this prints the
+                         various setup and teardown steps such as the
+                         calculated labels, initial sequents, goal,
+                         etc.  Not on anything by default.
+
+                rules -- all output during specialising of rules.  Not
+                         on anything by default.
+
+                counters -- various performance and statistics
+                            counters.  Not on anything by default.
+
+                database -- the kept sequents at the beginning of
+                            every OTTER loop.  Not on anything by
+                            default.
+
+                sos -- the set of support at the beginning of every
+                       OTTER loop.  Not on anything by default.
+
+                active -- the active set at the beginning of every
+                          OTTER loop.  Not on anything by default.
+
+                sel -- the selected sequent at the beginning of every
+                       OTTER loop.  Not on anything by default.
+
+                prefactor, postfactor
+                    -- new sequents before and after
+                       factoring.  Not on anything by default.
+
+                fsubs, bsubs
+                    -- forward and backward subsumption output.
+                       Not on anything by default.
+
+                validation -- output produced by the final validation
+                              phase, including the final proof-term.
+                              Not on anything by default.
+
+                loop -- misc. output specific to the mechanics of the
+                        OTTER loop.  Not on anything by default.
+
+                timers -- various timers, printed at the end of major
+                          commands and directives (i.e., prove,
+                          refute, %check, %reject, etc.)
+
+             NOTE: there is no additional cost to operations that are
+                   not logged on anything.
+
+
+    %unlog <operation>.
+
+             Stop logging the specified operation.

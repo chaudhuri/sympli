@@ -1,0 +1,177 @@
+structure ES = ExtSyn
+
+exception Parse
+
+open Prop
+val ` = Prop
+
+local open P.Desc in
+fun inf (Proof.Inf i) _ = i
+  | inf c (file, l, r) =
+                (ErrorMsg.error (Mark.mark {left = l, right = r, file = file})
+                                (hBox [Proof.pp_chk c, string " not an inferable term"]);
+                 raise Parse)
+end
+
+%%
+%name Prop
+
+%term EOF
+    | LPAREN | RPAREN
+    | LBRACK | RBRACK
+    | LBRACE | RBRACE
+    | COMMA | DOT | COLON | TICK | SEMI | CARET
+    | STAR | WITH | LOLLI | REVLOLLI | LEQUIV | CHOICE | ARROW | REVARROW | EQUIV | TOP | BANG
+    | FST | SND | LET | ULET | EQUALS | IN | END | LAM | INL | INR | CASE | OF | BAR | DARROW | ABORT
+    | LEFT | RIGHT
+    | AXIOM | THEOREM | LEMMA | PROVE | REFUTE | CONSTANT | PROP | TYPE
+    | CHECK | REJECT | NORM | LOG | UNLOG | BIND | CHANNEL | INCLUDE
+    | NUM of int | BOOL of bool | LIT of string | ID of string
+    | UNARY | APPLY | LOW
+
+
+
+%verbose
+%pos int * int
+
+%pure
+
+%eop EOF
+%noshift EOF
+
+%keyword AXIOM THEOREM LEMMA PROVE REFUTE CONSTANT PROP TYPE FST SND LET ULET IN END INL INR CASE OF ABORT CHECK REJECT LOG UNLOG BIND CHANNEL INCLUDE
+
+%arg (file) : string
+
+%left LOW
+%nonassoc EQUIV LEQUIV
+%left REVARROW REVLOLLI
+%right ARROW LOLLI
+%left CHOICE
+%left WITH
+%left STAR
+%nonassoc CARET
+%left APPLY
+%nonassoc UNARY
+
+%nonterm theory of (ExtSyn.cmd * Mark.mark) list
+       | lines of (ExtSyn.cmd * Mark.mark) list
+       | line of (ExtSyn.cmd * Mark.mark)
+       | cmd of ExtSyn.cmd
+       | prop of prop
+       | term of Proof.chk
+       | app of (Proof.chk * pos * pos) list
+       | aterm of Proof.chk
+       | ids of string list
+
+%start theory
+
+%%
+
+theory : lines                   (lines)
+
+lines  :                         ([])
+       | line lines              (line :: lines)
+
+line   : cmd DOT                 ((cmd, Mark.mark {left = cmdleft, right = DOTright, file = file}))
+
+cmd    : AXIOM ID COLON prop     (ES.Assume (ID, prop))
+       | THEOREM ID COLON prop   (ES.Assume (ID, prop))
+       | LEFT ids                (ES.Left ids)
+       | RIGHT ids               (ES.Right ids)
+       | PROVE prop              (ES.Prove (prop))
+       | REFUTE prop             (ES.Refute (Option.getOpt (Int.maxInt, 99999), prop))
+       | REFUTE NUM COLON prop   (ES.Refute (NUM, prop))
+       | CHECK term COLON prop   (ES.Check (term, prop))
+       | REJECT term COLON prop  (ES.Reject (term, prop))
+       | NORM term               (ES.Norm term)
+       | LOG ID COLON ID         (ES.Log (ID1, ID2))
+       | UNLOG ID                (ES.Unlog ID)
+       | BIND ID COLON LIT       (ES.Bind (ID, LIT))
+       | CHANNEL ID              (ES.Channel ID)
+       | INCLUDE LIT             (ES.Include (LIT))
+
+ids    : ID                      ([ID])
+       | ID COMMA ids            (ID :: ids)
+
+prop   : ID                      (Prop (Prop.Atomic (Atom.atom ID)))
+       | NUM                     (case NUM of
+                                    0 => `Zero
+                                  | 1 => `One
+                                  | n => (ErrorMsg.error' (Mark.mark {left = NUMleft,
+                                                                      right = NUMright,
+                                                                      file = file})
+                                                          ("unknown proposition: " ^ Int.toString n);
+                                          raise Parse))
+       | TOP                     (`Top)
+       | prop LOLLI prop         (Prop (Limp (prop1, prop2)))
+       | prop REVLOLLI prop      (Prop (Limp (prop2, prop1)))
+       | prop LEQUIV prop        (Prop (With (Prop (Limp (prop1, prop2)),
+                                              Prop (Limp (prop2, prop1)))))
+       | prop ARROW prop         (Prop (Limp (Prop (Bang prop1), prop2)))
+       | prop REVARROW prop      (Prop (Limp (Prop (Bang prop2), prop1)))
+       | prop EQUIV prop         (Prop (With (Prop (Limp (Prop (Bang prop1), prop2)),
+                                              Prop (Limp (Prop (Bang prop2), prop1)))))
+       | prop CHOICE prop        (Prop (Choice (prop1, prop2)))
+       | prop WITH prop          (Prop (With (prop1, prop2)))
+       | prop STAR prop          (Prop (Tensor (prop1, prop2)))
+       | BANG prop %prec UNARY   (Prop (Bang prop))
+       | LBRACE prop RBRACE      (Prop (Brace prop))
+       | LPAREN prop RPAREN      (prop)
+
+term   : app                       (case app of
+                                      [(t, _, _)] => t
+                                    | (h, hl, hr) :: S =>
+                                      let
+                                        val h = inf h (file, hl, hr)
+                                      in
+                                        Proof.Inf (List.foldl (fn ((c, _, _), h) => Proof.App (h, c)) h S)
+                                      end)
+       | term STAR term            (Proof.Tensor (term1, term2))
+       | FST term %prec UNARY      (Proof.Inf (Proof.Fst (inf term (file, termleft, termright))))
+       | SND term %prec UNARY      (Proof.Inf (Proof.Snd (inf term (file, termleft, termright))))
+       | INL term %prec UNARY      (Proof.Inl term)
+       | INR term %prec UNARY      (Proof.Inr term)
+       | BANG term %prec UNARY     (Proof.Bang term)
+       | LAM ID DOT term %prec LOW (Proof.Lam (Var.named ID, term))
+       | CASE term OF INL ID DARROW term BAR INR ID DARROW term %prec LOW
+                                   (Proof.Case (inf term1 (file, term1left, term1right),
+                                                (Var.named ID1, term2), (Var.named ID2, term3)))
+       | ABORT term %prec UNARY    (Proof.Abort (inf term (file, termleft, termright)))
+
+app    : aterm                     ([(aterm, atermleft, atermright)])
+       | aterm app                 ((aterm, atermleft, atermright) :: app)
+
+aterm  : ID                                     (Proof.Inf (Proof.Var (Var.named ID)))
+       | LET ID STAR ID EQUALS term IN term END
+                                                (Proof.LetTens (inf term1 (file, term1left, term1right),
+                                                                ((Var.named ID1, Var.named ID2), term2)))
+       | NUM                                    (case NUM of
+                                                   1 => Proof.One
+                                                 | n => (ErrorMsg.error' (Mark.mark {left = NUMleft,
+                                                                                     right = NUMright,
+                                                                                     file = file})
+                                                                         ("unknown numerical constant: "
+                                                                          ^ Int.toString n);
+                                                          raise Parse))
+       | LET NUM EQUALS term IN term END
+                                                (Proof.LetOne (inf term1 (file, term1left, term1right),
+                                                               term2))
+       | LPAREN term COMMA term RPAREN
+                                                (Proof.Pair (term1, term2))
+       | LPAREN RPAREN                          (Proof.Unit)
+       | LET BANG ID EQUALS term IN term END
+                                                (Proof.LetBang (inf term1 (file, term1left, term1right),
+                                                                (Var.named ID, term2)))
+       | LET LBRACE ID RBRACE EQUALS term IN term END
+                                                (Proof.LetBra (inf term1 (file, term1left, term1right),
+                                                               (Var.named ID, term2)))
+       | LET ID EQUALS term IN term END         (Proof.Let (inf term1 (file, term1left, term1right),
+                                                            (Var.named ID, term2)))
+       | ULET ID EQUALS term IN term END        (Proof.Ulet (inf term1 (file, term1left, term1right),
+                                                             (Var.named ID, term2)))
+       | LBRACE term RBRACE                     (Proof.Bra term)
+       | LBRACK term RBRACK                     (Proof.Inf (Proof.Chk term))
+
+                                                                         
+       | LPAREN term RPAREN                     (term)

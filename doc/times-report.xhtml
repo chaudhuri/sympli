@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+  <head>
+    <title>Comparison with Gandalf</title>
+    <link rel="stylesheet" type="text/css" href="http://www-2.cs.cmu.edu/~kaustuv/css/cur.css" />
+    <style type="text/css">
+      .bad { color: maroon; font-weight: bold; }
+      .unfin { background-color: pink; }
+    </style>
+  </head>
+  <body>
+
+    <h1>Comparison with Gandalf</h1>
+
+    <p>Text formatted <span class="bad">like this</span> indicates
+    incompleteness. Empty cells with <span class="unfin">this</span>
+    background denote runs that didn't finish in ~15 hours.</p>
+
+    <p>These tests were all performed on a laptop with a 1.2GHz Intel
+    Pentium-M processor, 512 MB of main memory, and 1024 KB of L1
+    cache. Numbers less than 0.1 seconds are averages of three
+    runs. All times are internally calculated, but are never off from
+    the wall-clock time by more than 0.1 seconds.</p>
+
+    <table cellspacing="0px" cellpadding="5px" border="1px" style="text-align: center">
+      <tr>
+        <th rowspan="2">test</th>
+        <th colspan="2">Gandalf</th>
+        <th colspan="2">our prover</th>
+      </tr>
+      <tr>
+        <th>tableaux</th>
+        <th>resolution</th>
+        <th>non-focusing</th>
+        <th>focusing</th>
+      </tr>
+      <tr>
+        <th><tt>fp</tt></th>
+        <td>0.01 s</td>
+        <td class="bad">0.06 s<sup>1</sup></td>
+        <td>0.029 s</td>
+        <td>0.011 s</td>
+      </tr>
+      <tr>
+        <th><tt>p1</tt></th>
+        <td>13.51 s<br />305333 gen</td>
+        <td>0.03 s<br />38 kept/65 gen</td>
+        <td>0.432 s</td>
+        <td>0.001 s</td>
+      </tr>
+      <tr>
+        <th><tt>uluc</tt></th>
+        <td class="unfin" />
+        <td>0.25 s<br />114 kept/188 gen</td>
+        <td>0.750 s</td>
+        <td>0.008 s</td>
+      </tr>
+      <tr>
+        <th><tt>coins</tt></th>
+        <td class="unfin" />
+        <td>1.77 s<br />318 kept/960 gen</td>
+        <td>4.351 s</td>
+        <td>0.001 s</td>
+      </tr>
+      <tr>
+        <th><tt>coins2</tt></th>
+        <td class="unfin" />
+        <td>2.14 s<br />348 kept/909 gen</td>
+        <td>13.559 s</td>
+        <td>0.002 s</td>
+      </tr>
+      <tr>
+        <th><tt>affine1</tt></th>
+        <td>0.01 s</td>
+        <td class="bad">&le; 0.01 s</td>
+        <td>0.053 s</td>
+        <td>0.026 s</td>
+      </tr>
+      <tr>
+        <th><tt>affine2</tt></th>
+        <td class="unfin" />
+        <td class="bad">44.93 s</td>
+        <td>46.81 m</td>
+        <td>4.631 s</td>
+      </tr>
+      <tr>
+        <th><tt>affine3</tt></th>
+        <td class="unfin" />
+        <td class="bad">4.81 s</td>
+        <td>20.02 m</td>
+        <td>0.194 s</td>
+      </tr>
+      <tr>
+        <th><tt>qbf1</tt></th>
+        <td>0.03 s</td>
+        <td>0.02 s</td>
+        <td>0.028 s</td>
+        <td>0.011 s</td>
+      </tr>
+      <tr>
+        <th><tt>qbf2</tt></th>
+        <td class="unfin" />
+        <td>42.34 s</td>
+        <td>1.600 s</td>
+        <td>0.027 s</td>
+      </tr>
+      <tr>
+        <th><tt>qbf3</tt></th>
+        <td class="unfin" />
+        <td>2.74 s</td>
+        <td>2.432 s</td>
+        <td>0.115 s</td>
+      </tr>
+      <tr>
+        <th><tt>qbf4</tt></th>
+        <td class="unfin" />
+        <td class="unfin" />
+        <td>~ 35 m </td>
+        <td>0.530 s</td>
+      </tr>
+    </table>
+
+    <blockquote style="color: maroon; font-weight: bold"><p>
+      <sup>1</sup> Gandalf's resolution prover failed to prove the following formulas:</p>
+      <pre>    1
+    (T -o T)
+    ((a -o T) -o T)
+    ((T -o a) -o T)
+    (1 -o (a + 1))
+    (0 -o (T -o c))
+    ((0 -o a) -o T)
+    (T -o (0 -o a))
+    ((0 * a) -o 0)
+    (0 -o (0 * a))
+    (0 -o (0 &amp; a))
+    ((! 1) -o T)
+    (1 -o (! T))
+    ((! T) -o T)
+    (0 -o (! 0))</pre>
+    </blockquote>
+
+    <h2>Information about particular tests</h2>
+
+    <h3>QBF examples</h3>
+
+    <table border="1px" cellspacing="0px" cellpadding="5px" rules="cols" style="text-align: center">
+      <tr style="border-bottom: solid 1px">
+        <th>example</th>
+        <th>what was translated?</th>
+      </tr>
+      <tr>
+        <td>qbf1</td>
+        <td>∃X. X ∧ X</td>
+      </tr>
+      <tr>
+        <td>qbf2</td>
+        <td>∃X. ∀Y. X ⊃ Y</td>
+      </tr>
+      <tr>
+        <td>qbf3</td>
+        <td>∀X. ∀Y. [X ⊃ Y] ∨. Y ⊃ X</td>
+      </tr>
+      <tr>
+        <td>qbf4</td>
+        <td>∀X. ∀Y. ∀Z. [[X ⊃ Y] ∧. Y ⊃ Z] ⊃. X ⊃ Z</td>
+      </tr>
+    </table>
+
+  </body>
+</html>

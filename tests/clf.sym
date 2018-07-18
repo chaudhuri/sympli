@@ -1,0 +1,17 @@
+%log term : highlevel.
+
+% log setup : highlevel.
+% log rules : highlevel.
+% log sos : highlevel.
+% log sel : highlevel.
+% log fsubs : highlevel.
+% log validation : highlevel.
+
+%prove A -o {A}.
+%refute {A} -o A.
+
+%prove (A -o B * C) -o D * A -o B * D * C.
+%prove (A -o {B * C}) -o D * A -o {B * D * C}.
+%refute (A -o {B * C}) -o D * A -o B * D * C.
+
+%prove (A -o {B * C}) -o A * D -o {B * #}.

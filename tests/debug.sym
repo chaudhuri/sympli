@@ -1,0 +1,33 @@
+%log rules : highlevel.
+%log setup : highlevel.
+% log paranoia : highlevel.
+
+%log loop : highlevel.
+
+% log sos : highlevel.
+% log active : highlevel.
+% log sel : highlevel.
+% log prefactor : highlevel.
+%log postfactor : highlevel.
+%log validation : highlevel.
+% log bsubs : highlevel.
+% log counters : highlevel.
+%log timers : highlevel.
+
+% log lit2 : highlevel.
+
+% prove A * B + A * C -o A * (B + C).
+
+% prove A * B -o A * (B + C).
+
+% prove A -o A.
+
+% prove (A -o B) -> A * A * B -o B * B * #.
+
+% prove A + B -o A + B.
+
+% prove A & 1 -> A.
+
+% prove (A -o B) -> A -> B.
+
+%prove (A -o 1) -o A -o 1.

@@ -1,0 +1,135 @@
+\documentclass{article}
+
+\usepackage{amsmath,amssymb}
+\usepackage{syn}
+
+% only one of the two following two lines is necessary; txfonts has better glyphs
+% \usepackage{stmaryrd}
+\usepackage{txfonts}
+
+\usepackage{fullpage}
+\usepackage{proof}
+
+\allowdisplaybreaks[4]
+
+\title{Proof Checking}
+\author{Kaustuv Chaudhuri}
+
+\begin{document}
+
+\maketitle
+
+\sdef{GG}{\Gamma}
+\sdef{DD}{\Delta}
+\sdef{PP}{\Psi}
+\sdef{YY}{\Upsilon}
+
+\sdef{gg}{\gamma}
+
+\sdef{==>}{\Longrightarrow}
+\sdef{<==}{\Longleftarrow}
+
+\sdef{aa}{\alpha}
+\sdef{bb}{\beta}
+\sdef{cc}{\gamma}
+
+\sdef{/}{\mathbin{\backslash}}
+\sdef{;}{\mathbin{\mathtt{;}}}
+\sdef{and}{\wedge}
+\sdef{or}{\vee}
+
+\makeatletter
+\let\I@align=\vbox
+\def\Ic{\let\I@align=\vcenter\I}
+\newcommand{\I}[2][]{\def\I@args{[#1]{#2\mathstrut}}\I@more}
+\def\I@more{\@ifnextchar\bgroup\I@pre\I@nopre}
+\def\I@nopre{\expandafter\I@\I@args{}}
+\def\I@pre#1{\expandafter\I@\I@args{#1\mathstrut}}
+\def\I@[#1]#2#3{\I@align{\let\I@align=\vbox\infer[#1]{#2}{#3}}}
+\makeatother
+
+\sdef{tens}{\otimes}
+
+\sdef{-o}{\multimap}
+\sdef{with}{\mathbin{\&}}
+\sdef{fst}{\mathop{\mathtt{fst}}}
+\sdef{snd}{\mathop{\mathtt{snd}}}
+
+\sdef{let}{\mathtt{let}\,}
+\sdef{in}{\mathbin{\mathtt{in}}}
+
+\sdef{choice}{\oplus}
+\sdef{inl}{\mathop{\mathtt{inl}}}
+\sdef{inr}{\mathop{\mathtt{inr}}}
+\sdef{case}{\mathtt{case}\,}
+\sdef{of}{\mathbin{\mathtt{of}}}
+\sdef{=>}{\mathbin{\Rightarrow}}
+\sdef{|}{\mathbin{|}}
+
+\sdef{abort}{\mathop{\mathtt{abort}}}
+
+\sdef{lam}#1.{\lambda #1.\;}
+
+\def\SP{\hspace{2em plus 1em minus 1.5em}}
+
+\sdef{-->}{\longrightarrow}
+\sdef{|-}{\vdash}
+
+\sdef{.}{\cdot}
+
+\begin{gather*}
+  \I{"GG ; . ; u : A -->^0 u : A"}
+  \SP
+  \I{"GG, p :: A ; PP ; DD -->^w \pi : gg"}
+    {"YY -->^w \pi : gg" & "YY |- ( GG, PP, DD ) + p : A_!"}
+  \SP
+  \I{"GG ; PP, p : A ; DD -->^w \pi : gg"}
+    {"YY -->^w \pi : gg" & "YY |- ( GG, PP, DD ) + p : A_{with 1}"}
+  \\[1em]
+  \I{"GG, p :: A ; PP ; DD -->^w \pi : gg"}
+    {"GG, p :: A, q :: A ; PP ; DD -->^w \pi : gg"}
+\end{gather*}
+
+"tens"
+\begin{gather*}
+  \I{"GG ; PP ; DD, p tens q : A tens B -->^w \pi : gg"}
+    {"GG ; PP ; DD, p : A, q : B -->^w \pi : gg"}
+  \SP
+  \I{"GG ; PP ; DD, p tens \_ : A tens B -->^1 \pi : gg"}
+    {"GG ; PP ; DD, p : A -->^1 \pi : gg"}
+  \SP
+  \I{"GG ; PP ; DD, \_ tens q : A tens B -->^1 \pi : gg"}
+    {"GG ; PP ; DD, q : B -->^1 \pi : gg"}
+  \\[1em]
+  \I{"GG, GG' ; PP, PP' ; DD, DD' -->^{w_1 or w_2} \pi_1 tens \pi_2 : A tens B"}
+    {"GG ; PP ; DD -->^{w_1} \pi_1 : A" & "GG' ; PP' ; DD' -->^{w_2} \pi_2 : B"}
+\end{gather*}
+
+"-o"
+\begin{gather*}
+  \I{"GG ; PP ; DD -->^w lam p. \pi : A -o B"}
+    {"YY -->^w \pi : B" & "YY |- ( GG ; PP ; DD ) + p:A"}
+  \SP
+  \I{"GG, GG' ; PP, PP' ; DD, DD', p : A -o B -->^{w_1 or w_2} \pi : gg"}
+    {"GG ; PP ; DD -->^w \pi_A : A"
+     &
+     "YY -->^{w_2} \pi : g"
+     &
+     "YY |- ( GG' ; PP' ; DD' ) + p : B"}
+\end{gather*}
+
+"with"
+\begin{gather*}
+  \I{"GG ; PP ; DD -->^{w_1 and w_2} (\pi_1, \pi_2) : A with B"}
+    {"GG ; PP ; DD -->^{w_1} \pi_1 : A"
+     &
+     "GG ; PP ; DD -->^{w_2} \pi_2 : B"}
+  \\[1em]
+  \I{"GG ; PP ; DD, (p, \_) : A with B -->^w \pi : C"}
+    {"GG ; PP ; DD, p : A -->^w \pi : C"}
+  \SP
+  \I{"GG ; PP ; DD, (\_, p) : A with B -->^w \pi : C"}
+    {"GG ; PP ; DD, p : B -->^w \pi : C"}
+\end{gather*}
+
+\end{document}
