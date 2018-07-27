@@ -26,7 +26,7 @@ fun init () = STATE {nls = ref [1],
 fun lookup (a :: rest, cur) w =
       if a < w then (cur, w - a)
       else lookup (rest, cur - 1) w
-  | lookup _ w = ErrorMsg.impossible' "undefined pos"
+  | lookup (nil, cur) w = (cur, 1)
 
 local open P.Desc in
 fun newline (STATE {nls, cur, comlev, comst}) pos =
@@ -2034,12 +2034,12 @@ val s = [
 ),
 (0, "")]
 fun f x = x 
-val s = map f (rev (tl (rev s))) 
+val s = List.map f (List.rev (tl (List.rev s))) 
 exception LexHackingError 
 fun look ((j,x)::r, i: int) = if i = j then x else look(r, i) 
   | look ([], i) = raise LexHackingError
 fun g {fin=x, trans=i} = {fin=x, trans=look(s,i)} 
-in Vector.fromList(map g 
+in Vector.fromList(List.map g 
 [{fin = [], trans = 0},
 {fin = [], trans = 1},
 {fin = [], trans = 1},
@@ -2253,7 +2253,7 @@ let fun continue() : Internal.result =
 	| action (i,(node::acts)::l) =
 		case node of
 		    Internal.N yyk => 
-			(let fun yymktext() = substring(!yyb,i0,i-i0)
+			(let fun yymktext() = String.substring(!yyb,i0,i-i0)
 			     val yypos = YYPosInt.+(YYPosInt.fromInt i0, !yygone)
 			open UserDeclarations Internal.StartStates
  in (yybufpos := i; case yyk of 
@@ -2416,14 +2416,14 @@ let fun continue() : Internal.result =
 	     if trans = #trans(Vector.sub(Internal.tab,0))
 	       then action(l,NewAcceptingLeaves
 ) else	    let val newchars= if !yydone then "" else yyinput 1024
-	    in if (size newchars)=0
+	    in if (String.size newchars)=0
 		  then (yydone := true;
 		        if (l=i0) then UserDeclarations.eof yyarg
 		                  else action(l,NewAcceptingLeaves))
 		  else (if i0=l then yyb := newchars
-		     else yyb := substring(!yyb,i0,l-i0)^newchars;
+		     else yyb := String.substring(!yyb,i0,l-i0)^newchars;
 		     yygone := YYPosInt.+(!yygone, YYPosInt.fromInt i0);
-		     yybl := size (!yyb);
+		     yybl := String.size (!yyb);
 		     scan (s,AcceptingLeaves,l-i0,0))
 	    end
 	  else let val NewChar = Char.ord(CharVector.sub(!yyb,l))
@@ -2433,7 +2433,7 @@ let fun continue() : Internal.result =
 	end
 	end
 (*
-	val start= if substring(!yyb,!yybufpos-1,1)="\n"
+	val start= if String.substring(!yyb,!yybufpos-1,1)="\n"
 then !yybegin+1 else !yybegin
 *)
 	in scan(!yybegin (* start *),nil,!yybufpos,!yybufpos)

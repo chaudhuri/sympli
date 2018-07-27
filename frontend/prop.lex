@@ -21,7 +21,7 @@ fun init () = STATE {nls = ref [1],
 fun lookup (a :: rest, cur) w =
       if a < w then (cur, w - a)
       else lookup (rest, cur - 1) w
-  | lookup _ w = ErrorMsg.impossible' "undefined pos"
+  | lookup (nil, cur) w = (cur, 1)
 
 local open P.Desc in
 fun newline (STATE {nls, cur, comlev, comst}) pos =
